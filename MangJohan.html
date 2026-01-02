@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>barang murah SE online raya</title>
+<style>
+*{box-sizing:border-box;font-family:Arial,sans-serif}
+body{margin:0;background:#f4fff4;color:#1f3d1f}
+header{background:#8fd694;padding:16px;text-align:center}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:14px}
+.container{padding:16px}
+h2{border-bottom:2px solid #8fd694;padding-bottom:6px;margin-top:32px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-top:16px}
+.card{background:#fff;border-radius:10px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,.1);text-align:center;position:relative}
+.card img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+.card h3{font-size:14px;margin:10px 0 6px}
+.price{font-weight:bold;color:#2e7d32;margin-bottom:10px}
+.btn{display:inline-block;padding:8px 12px;background:#4caf50;color:#fff;text-decoration:none;border-radius:6px;font-size:13px}
+.btn:hover{background:#43a047;cursor:pointer}
+footer{text-align:center;padding:16px;font-size:13px;background:#e8f7e8;margin-top:40px}
+#cart{position:fixed;bottom:20px;right:20px;background:#4caf50;color:#fff;padding:12px 16px;border-radius:50px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.2);}
+#cart span{font-weight:bold;}
+#product-form{margin-top:20px;background:#e8f7e8;padding:12px;border-radius:10px;}
+#product-form input, #product-form button{margin:6px 0;padding:8px;width:100%;border-radius:6px;border:1px solid #ccc}
+#cart-items{position:fixed;bottom:80px;right:20px;background:#fff;padding:12px;border-radius:10px;max-width:300px;box-shadow:0 2px 6px rgba(0,0,0,0.2);display:none;}
+#cart-items h3{margin-top:0}
+#cart-items ul{list-style:none;padding:0;margin:0}
+#cart-items li{margin-bottom:8px;display:flex;justify-content:space-between}
+</style>
+</head>
+<body>
+
+<header>
+<h1>barang murah SE online raya</h1>
+<p>Baju & Celana Anak • Remaja • Dewasa</p>
+</header>
+
+<div class="container">
+
+<h2>Produk</h2>
+<div class="products" id="products">
+<!-- Produk akan muncul di sini -->
+</div>
+
+<h2>Tambah Produk Baru</h2>
+<div id="product-form">
+  <input type="text" id="p-name" placeholder="Nama Produk">
+  <input type="number" id="p-price" placeholder="Harga">
+  <input type="text" id="p-img" placeholder="Link Foto (stok aman / Unsplash)">
+  <select id="p-category">
+    <option value="Anak">Anak</option>
+    <option value="Remaja">Remaja</option>
+    <option value="Dewasa">Dewasa</option>
+  </select>
+  <button onclick="addProduct()">Tambah Produk</button>
+</div>
+
+</div>
+
+<div id="cart" onclick="toggleCart()">Keranjang (<span id="cart-count">0</span>)</div>
+<div id="cart-items">
+<h3>Keranjang</h3>
+<ul id="cart-list"></ul>
+<div>Total: Rp<span id="cart-total">0</span></div>
+</div>
+
+<footer>
+© 2026 barang murah SE online raya • Order via WhatsApp
+</footer>
+
+<script>
+let products = [
+  {name:"Baju Anak Lucu",price:35000,img:"https://images.unsplash.com/photo-1602810319428-019690571b5b",category:"Anak"},
+  {name:"Celana Anak Nyaman",price:40000,img:"https://images.unsplash.com/photo-1593032465175-481ac7f401a0",category:"Anak"},
+  {name:"Kaos Remaja Kekinian",price:55000,img:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab",category:"Remaja"},
+  {name:"Celana Remaja",price:65000,img:"https://images.unsplash.com/photo-1541099649105-f69ad21f3246",category:"Remaja"},
+  {name:"Baju Dewasa Polos",price:75000,img:"https://images.unsplash.com/photo-1520975916090-3105956dac38",category:"Dewasa"},
+  {name:"Celana Dewasa",price:85000,img:"https://images.unsplash.com/photo-1514996937319-344454492b37",category:"Dewasa"}
+];
+
+let cart = [];
+
+function renderProducts(){
+  const container = document.getElementById('products');
+  container.innerHTML = "";
+  products.forEach((p,i)=>{
+    const div = document.createElement('div');
+    div.className = "card";
+    div.innerHTML = `
+      <img src="${p.img}" alt="${p.name}">
+      <h3>${p.name}</h3>
+      <div class="price">Rp${p.price.toLocaleString()}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div class="btn" onclick="addToCart(${i})">Tambah ke Keranjang</div>
+        <a class="btn" href="https://wa.me/6285691451094?text=Halo%20saya%20mau%20pesan%20${encodeURIComponent(p.name)}" target="_blank">Beli via WA</a>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function addProduct(){
+  const name = document.getElementById('p-name').value;
+  const price = parseInt(document.getElementById('p-price').value);
+  const img = document.getElementById('p-img').value;
+  const category = document.getElementById('p-category').value;
+  if(name && price && img){
+    products.push({name,price,img,category});
+    renderProducts();
+    document.getElementById('p-name').value="";
+    document.getElementById('p-price').value="";
+    document.getElementById('p-img').value="";
+  }else{
+    alert("Isi semua data produk!");
+  }
+}
+
+function addToCart(index){
+  cart.push(products[index]);
+  updateCart();
+}
+
+function updateCart(){
+  const list = document.getElementById('cart-list');
+  list.innerHTML="";
+  let total=0;
+  cart.forEach((item,i)=>{
+    total+=item.price;
+    const li = document.createElement('li');
+    li.innerHTML=`${item.name} - Rp${item.price.toLocaleString()} <span style="cursor:pointer;color:red" onclick="removeFromCart(${i})">×</span>`;
+    list.appendChild(li);
+  });
+  document.getElementById('cart-count').innerText=cart.length;
+  document.getElementById('cart-total').innerText=total.toLocaleString();
+}
+
+function removeFromCart(i){
+  cart.splice(i,1);
+  updateCart();
+}
+
+function toggleCart(){
+  const ci = document.getElementById('cart-items');
+  ci.style.display = ci.style.display==="none"?"block":"none";
+}
+
+renderProducts();
+</script>
+
+</body>
+</html>
